@@ -92,11 +92,11 @@ print(gc.collect())
 
 应用：装饰器， 单例模式， 偏函数
 
-![image-20190713121442572](/Users/manasseh/Library/Application Support/typora-user-images/image-20190713121442572.png)
+![image-20190713121442572](https://oajua4pqj.qnssl.com/image-20190713121442572.png)
 
 
 
-![image-20190713121423974](/Users/manasseh/Library/Application Support/typora-user-images/image-20190713121423974.png)
+![image-20190713121423974](https://oajua4pqj.qnssl.com/image-20190713121423974.png)
 
 ### 装饰器
 
