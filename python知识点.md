@@ -277,7 +277,56 @@ print(list(islice(f, 0, 10)))
 | ``                 |                                                              |              |
 | ``                 |                                                              |              |
 
+### 元类
 
+isinstance判断一个对象是不是由一个对象产生
+
+issubclass判断一个类是不是另一个类的子类
+
+在python中一切皆是对象，那么我们用class关键字定义的类本身也是一个对象，负责产生该对象的类称之为元类，即元类可以简称为类的类
+
+为什么要用元类？
+
+元类是负责产生类的，所以我们学习元类或者自定义类的目的是为了控制类的产生过程，还可以控制对象的产生过程,常用于orm。通过定义元类来控制orm当中的类与数据库的映射。
+
+创建类的方法有两种：
+
+1. 使用class关键字去创建类，其实也是一个实例化的过程，实例化的目的是的呆一个类，实质上调用的是元类
+2. 使用type关键字，其中需要包含类名，基类，类的命名空间，将该三要素传给type调用元类即产生对象
+
+```python
+class_dict = {}
+People = type('People', (object,), class_dict)
+print(People)
+# <class '__main__.People'>
+
+
+# d定义元类
+class Animal(type):
+    def __init__(self, class_name, class_bases, class_dict):
+        super(Animal, self).__init__(class_name, class_bases, class_dict)
+
+
+# 制定python解释器在创建类时，通过该元类来创建，以此来控制类的创建
+class Human(object, metaclass=Animal):
+    pass
+```
+
+### import
+
+python的包机制
+
+模块：对于 python来说其实就是一个py文件，定义了各种变量，类，函数
+
+包：一个有层次结构的文件目录，里面包含了一些子包和模块，要求包中必须带有一个`__init__.py`文件
+
+导入方法：`import module_name`或者`from package_name.module_name import module_element`
+
+该过程会将py文件当中的对应内容加载到内存当中，导入模块时，会自动在对应文件夹下生成一个pyc文件
+
+导入包的本质是导入包下面的`__init__.py`文件
+
+python所有被加载的模块都放在了sys.module, 如果没有的话就需要去sys.path路径下去寻找，一般该路径包括解释器路径， 第三方包路径，文件路径, 项目路径中的py, pyc，pyd, pyo等文件
 
 ## 容器实现及其复杂度
 
@@ -720,30 +769,11 @@ g.close()								# 关闭协程
 
 
 
-# 协议
 
-## TCP/IP
-
-`自己的csdn博客有`
-
-`https://blog.csdn.net/weixin_40389301/article/details/80310483`
 
 ## HTTP
 
-介绍：超文本传输协议，应用层上的一种c/s模型的通信协议，由请求和响应构成，且无状态的，默认端口号80，Https默认端口号443
-
-特点：
-
-1. 协议：规定了通信双方必须遵守的数据传输格式，双方按照约定的格式才能准确的通信
-2. 无状态：指两次连接通信之间是没有任何关系的。每次都是一个新的连接，服务端无法记录前后的请求信息
-3. 客户端/服务端模型
-4. 处于五层网络模型当中的应用层。通常承载于TLS或SSl协议层之上，这时候就成了常说的Https
-
-工作流程：
-
-1. 客户端与服务器建立http连接
-2. 客户端发送请求给服务端，请求格式为：统一资源标识符。协议版本号等信息
-3. 服务器
+3. 
 
 # 算法
 
