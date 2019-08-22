@@ -328,6 +328,48 @@ python的包机制
 
 python所有被加载的模块都放在了sys.module, 如果没有的话就需要去sys.path路径下去寻找，一般该路径包括解释器路径， 第三方包路径，文件路径, 项目路径中的py, pyc，pyd, pyo等文件
 
+### StringIO和BytesIO
+
+StringIO只能从内存中读写str
+
+BytesIO实现了在内存中读写二进制数据bytes
+
+```python
+"hello world".encode("utf-8")		# b'hello world'  unicode编码转utf-8, unicodo无法解码为utf-8
+
+"hello world".encode("utf-8").decode("utf-8")  # 'hello world'
+```
+
+### 序列化
+
+序列化：把变量从内存中变成可存储或传输的过程称之为序列化,    字符串----->二进制
+
+反序列化：把变量内容从序列化对象重新读到内存里称之为反序列化。   二进制----->字符串
+
+```python
+import pickle
+
+print(pickle.dumps(dict(name="lz", age=23)))
+print(pickle.loads(pickle.dumps(dict(name="lz", age=23))))
+# out:
+#b'\x80\x03}q\x00(X\x04\x00\x00\x00nameq\x01X\x02\x00\x00\x00lzq\x02X\x03\x00\x00\x00ageq\x0#3K\x17u.'
+# {'name': 'lz', 'age': 23}
+```
+
+### 函数式编程
+
+抽象程度很高的编程范式，允许把函数本身作为参数传入另一个函数，还允许返回一个函数
+
+### functools
+
+
+
+### reduce
+
+Python2 中是内置函数，python3中迁移到了functools当中
+
+从左到右对一个序列的项累计地应用有两个参数的函数，一次合并序列到一个单一值
+
 ## 容器实现及其复杂度
 
 ### 列表List
@@ -834,9 +876,69 @@ g.close()								# 关闭协程
 
 重新建堆不需要从头再来，只需要将当前堆中的最后一个元素与根结点交换位置，同时让堆中元素个数减1，因为此时根结点的左右子树都还满足堆的条件
 
+代码步骤：
+
+1. 根据排序记录构建大顶堆或者小顶堆
+2. 交换首尾元素，将记录长度减一
+3. 堆剩余元素进行筛选，选出最大元素，筛选算法在筛选最大值的同时应维持堆条件
+4. 对剩余元素重复步骤3
+
+```go
+package main
+
+import "fmt"
+
+// 筛选算法，
+func heapify(arr []int, i int, arrLen int)  {
+	left, right := 2*i + 1, 2*i + 2
+	largest := i
+	if left < arrLen && arr[left] > arr[largest]{
+		largest = left
+	}
+	if right < arrLen && arr[right] > arr[largest]{
+		largest = right
+	}
+	if largest != i{
+		arr[i], arr[largest] = arr[largest], arr[i]
+		heapify(arr, largest, arrLen)   //这一步是为了让记录仍然满足堆的条件
+	}
+}
+
+
+//构建大顶堆
+func buildMaxHead(arr[]int, arrLen int)  {
+	for i := arrLen / 2;i >= 0; i--{
+		heapify(arr, i, arrLen)
+	}
+}
+
+func heapSort(arr[]int)  {
+	arrLen := len(arr)
+	buildMaxHead(arr, arrLen)
+	for i := arrLen - 1;i >= 0; i--{
+		arr[0], arr[i] = arr[i], arr[0]
+		arrLen -= 1
+		heapify(arr, 0, arrLen)    // 删除一个元素后重新筛选
+	}
+}
+func main() {
+	arr := []int{25, 41, 17, 32, 26, 16, 2,29, 38, 10}
+	heapSort(arr)
+	fmt.Print(arr)
+}
+```
+
+
+
 ### 归并排序
 
+二路归并排序：将两个有序记录进行合并排序，即对比排序码，将所有代排序记录放在一个有序文件中，排序完成
 
+对于由n个记录构成的待排序文件进行归并排序：
+
+1. 合并任意两个有序数组，注意数组长度不相等时，在合并结束需将剩余元素也进行合并，并返回新的数组
+2. 将待排序记录使用递归分解，知道没个数组当中只剩一个元素时，递归结束
+3. 合并递归分解的左右两个数组
 
 ### 算法对比
 
@@ -848,6 +950,7 @@ g.close()								# 关闭协程
 | 插入排序     | O(n2)        | O(n2)          | 稳定   | O(1)           |
 | 二分插入排序 | O(n2)        | O(n2)          | 稳定   | O(1)           |
 | 堆排序       | O(n*log2n)   | O(n*log2n)     | 不稳定 | O(1)           |
+| 归并排序     | O(n*log2n)   | O(n*log2n)     | 稳定   | O(n)           |
 
 # 数据结构
 
